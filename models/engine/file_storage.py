@@ -1,4 +1,4 @@
-#!/c/msys64/mingw64/bin/python
+#!/usr/bin/python3
 
 import os
 import json
