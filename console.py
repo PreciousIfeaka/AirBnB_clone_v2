@@ -5,7 +5,7 @@
 
 import models
 import cmd
-import shlex
+from shlex import split
 from models.base_model import BaseModel
 from models.user import User
 from models.city import City
@@ -153,7 +153,7 @@ class HBNBCommand(cmd.Cmd):
         This counts the instances of a certain class
         """
         cmd_list = split(line, ".")
-        class_name = cmdi_list[0]
+        class_name = cmd_list[0]
         if class_name not in classes:
             raise NameError("** class doesn't exist **")
         else:
