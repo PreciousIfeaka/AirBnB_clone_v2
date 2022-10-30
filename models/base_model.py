@@ -1,17 +1,23 @@
 #!/usr/bin/python3
+<<<<<<< HEAD
 """
 This module contains the BaseModel class
 """
 import uuid
 from datetime import datetime
 import models
+=======
+>>>>>>> 80865b320f4c07f10c52f1d58b658776ca3c42fa
 
+import uuid
+from datetime import datetime, time, date
+import models
 
-class BaseModel:
-    """This class defines all common attributes/methods for other classes
-    """
+class BaseModel():
+    '''This class defines all common attributes/methods for other classes'''
 
     def __init__(self, *args, **kwargs):
+<<<<<<< HEAD
         """initializes instances from the dict representation"""
         if kwargs:
             for key, value in kwargs.items():
@@ -26,23 +32,37 @@ class BaseModel:
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
+=======
+        if kwargs:
+            for k, v in kwargs.items():
+                if k == 'created_at' or k == 'updated_at':
+                    v = datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%f')
+                if k == '__class__':
+                    continue
+                setattr(self, k, v)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.today()
+>>>>>>> 80865b320f4c07f10c52f1d58b658776ca3c42fa
             self.updated_at = datetime.now()
             models.storage.new(self)
 
     def __str__(self):
-        """prints the instance in the given format"""
-        return "[{}] ({}) {}".format(
-                self.__class__.__name__, self.id, self.__dict__)
+        return "[{}] ({}) {}".format(self.__class__.__name__,
+                self.id, self.__dict__)
 
     def save(self):
-        """updates the pulic instance attribute with the correct datetime"""
+        '''updates the public instance attribute updated_at with the
+        current datetime
+        '''
         self.updated_at = datetime.now()
         models.storage.save()
 
     def to_dict(self):
-        """returns a dictionary containing all set instances"""
+        '''returns a dictionary containing all keys/values of __dict__
+        of the instance'''
         new_dict = self.__dict__.copy()
-        new_dict.update({'__class__': str(self.__class__.__name__)})
-        new_dict["created_at"] = str(self.created_at.isoformat())
-        new_dict["updated_at"] = str(self.updated_at.isoformat())
+        new_dict.update({'__class__': __class__.__name__})
+        new_dict["created_at"] = self.created_at.isoformat()
+        new_dict["updated_at"] = self.updated_at.isoformat()
         return new_dict
