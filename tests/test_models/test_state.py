@@ -27,8 +27,8 @@ class TestStateModel(unittest.TestCase):
     def test_str_rep(self):
         """test for string representation of user object"""
         self.assertEqual(self.state.__str__(),
-                        "[State] ({}) {}".format(self.state.id,
-                                                self.state.__dict__))
+                         "[State] ({}) {}".format(
+                          self.state.id, self.state.__dict__))
 
     def test_for_inheritedMethod(self):
         """test for method inherited from the super class"""

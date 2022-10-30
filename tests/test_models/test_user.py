@@ -33,5 +33,5 @@ class TestUserClass(unittest.TestCase):
     def test_str_rep(self):
         """tests string rep of user"""
         self.assertEqual(self.inst.__str__(),
-                        "[User] ({}) {}".format(self.inst.id,
-                                                self.inst.__dict__))
+                         "[User] ({}) {}".format(self.inst.id,
+                                                 self.inst.__dict__))

@@ -5,6 +5,7 @@ from models.city import City
 import unittest
 import pycodestyle
 
+
 class TestCity(unittest.TestCase):
     """class contains test cases for City class"""
 
