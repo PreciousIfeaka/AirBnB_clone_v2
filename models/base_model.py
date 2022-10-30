@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
 This module contains the BaseModel class
 """
 import uuid
 from datetime import datetime
+import models
 
 
 class BaseModel:
@@ -12,7 +13,7 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """initializes instances from the dict representation"""
-        if kwargs is not None:
+        if kwargs:
             for key, value in kwargs.items():
                 """iterates through the attributes of instance in the dict"""
                 if key == "created_at" or key == "updated_at":
@@ -22,10 +23,11 @@ class BaseModel:
                     continue
                 """The class key is not added"""
                 setattr(self, key, value)
-
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+            models.storage.new(self)
 
     def __str__(self):
         """prints the instance in the given format"""
@@ -35,7 +37,7 @@ class BaseModel:
     def save(self):
         """updates the pulic instance attribute with the correct datetime"""
         self.updated_at = datetime.now()
-        return
+        models.storage.save()
 
     def to_dict(self):
         """returns a dictionary containing all set instances"""
