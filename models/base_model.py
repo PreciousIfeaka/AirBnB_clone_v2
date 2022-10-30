@@ -1,5 +1,17 @@
 #!/usr/bin/python3
+<<<<<<< HEAD
 """file contains BaseModel class"""
+=======
+<<<<<<< HEAD
+"""
+This module contains the BaseModel class
+"""
+import uuid
+from datetime import datetime
+import models
+=======
+>>>>>>> 80865b320f4c07f10c52f1d58b658776ca3c42fa
+>>>>>>> 007809935c850ffb05bc675957415652752ecaa9
 
 import uuid
 from datetime import datetime, time, date
@@ -10,8 +22,27 @@ class BaseModel():
     '''This class defines all common attributes/methods for other classes'''
 
     def __init__(self, *args, **kwargs):
+<<<<<<< HEAD
         """args isn't used, re-creates an instance with this dictionary
         representation"""
+=======
+<<<<<<< HEAD
+        """initializes instances from the dict representation"""
+        if kwargs:
+            for key, value in kwargs.items():
+                """iterates through the attributes of instance in the dict"""
+                if key == "created_at" or key == "updated_at":
+                    value = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                    """the datetime is converted from str to object format"""
+                if key == "__class__":
+                    continue
+                """The class key is not added"""
+                setattr(self, key, value)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+=======
+>>>>>>> 007809935c850ffb05bc675957415652752ecaa9
         if kwargs:
             for k, v in kwargs.items():
                 if k == 'created_at' or k == 'updated_at':
@@ -21,7 +52,12 @@ class BaseModel():
                 setattr(self, k, v)
         else:
             self.id = str(uuid.uuid4())
+<<<<<<< HEAD
             self.created_at = datetime.now()
+=======
+            self.created_at = datetime.today()
+>>>>>>> 80865b320f4c07f10c52f1d58b658776ca3c42fa
+>>>>>>> 007809935c850ffb05bc675957415652752ecaa9
             self.updated_at = datetime.now()
             models.storage.new(self)
 
