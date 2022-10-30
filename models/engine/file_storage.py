@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""file contains FileStorage class"""
 
 import os
 import json
@@ -9,6 +10,7 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+
 
 class FileStorage:
     '''This class serializes instances to a JSON file and deserializes

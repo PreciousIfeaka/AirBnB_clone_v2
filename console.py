@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""file contains code for console program"""
 
 import models
 import cmd
@@ -13,10 +14,10 @@ from models.review import Review
 
 classes = ["BaseModel", "User", "Place", "City", "State", "Amenity", "Review"]
 
+
 class HBNBCommand(cmd.Cmd):
     '''contains the entry point of the command interpreter'''
     prompt = '(hbnb) '
-
 
     def do_quit(self, arg):
         """Quit command to exit the program\n"""
@@ -36,7 +37,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        argv = arg.split() #splits using whitespace to give arguments
+        argv = arg.split()  # splits using whitespace to give arguments
         if argv[0] not in classes:
             print("** class doesn't exist **")
         else:
@@ -71,7 +72,7 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        argv = arg.split() #splits arguments using whitespace as seperator
+        argv = arg.split()  # splits arguments using whitespace as seperator
         if argv[0] not in classes:
             print("** class doesn't exist **")
             return
@@ -83,7 +84,7 @@ class HBNBCommand(cmd.Cmd):
                 key = argv[0] + "." + argv[1]
                 models.storage.all().pop(key)
                 models.storage.save()
-            except:
+            except Exception:
                 print("** no instance found **")
             finally:
                 return
@@ -134,7 +135,7 @@ class HBNBCommand(cmd.Cmd):
                 key = argv[0] + "." + argv[1]
                 if key in models.storage.all():
                     models.storage.all()[key]
-            except:
+            except Exception:
                 print("** no instance found **")
                 return
         if len(argv) == 2:
