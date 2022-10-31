@@ -12,7 +12,7 @@ import pycodestyle
 
 class TestBaseModel(unittest.TestCase):
     """class contains methods testing BaseModel instances"""
-    
+
     def setUp(self):
         """prepare test fixtures"""
         if os.path.isfile("file.json"):
@@ -33,8 +33,8 @@ class TestBaseModel(unittest.TestCase):
         '''tests that code complies with pycodestyle guide'''
         style = pycodestyle.StyleGuide()
         result = style.check_files(["models/base_model.py"])
-        self.assertEqual(result.total_errors, 0,
-                        "code doesn't comply with pycodestyle")
+        self.assertEqual(result.total_errors, 0, "
+                         code doesn't comply with pycodestyle")
 
     def test_class_attr(self):
         """tests the various instance attributes in BaseModel class"""
