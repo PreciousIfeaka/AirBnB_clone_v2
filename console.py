@@ -66,12 +66,15 @@ class HBNBCommand(cmd.Cmd):
             for obj in models.storage.all().keys():
                 if obj == key:
                     print(models.storage.all()[key])
+                    break
+            if obj != key:
+                print("** no instance found **")
 
     def count(self, line):
         """
         This counts the instances of a certain class
         """
-        cmd_list = split(line, ".")
+        cmd_list = line.split('.')
         class_name = cmd_list[0]
         if class_name not in classes:
             raise NameError("** class doesn't exist **")
@@ -139,33 +142,23 @@ class HBNBCommand(cmd.Cmd):
                         self.do_update("{} {} {} {}".format(
                             class_name, inst_id, cmd_attr, cmd_attr1))
 
-    def do_all(self, arg):
-        '''Prints all string representation of all instances based or
-        not on the class name'''
-        if not arg:
-            list_inst = []
-            for key, val in models.storage.all().items():
-                list_int.append(str(val))
-            if not list_inst:
-                print("storage is empty!")
+    def do_all(self, args):
+        """ Shows all objects, or all objects of a class"""
+        print_list = []
+
+        if args:
+            args = args.split(' ')[0]  # remove possible trailing args
+            if args not in classes:
+                print("** class doesn't exist **")
                 return
-            else:
-                print(list_inst)
-                return
-        argv = arg.split()
-        if argv[0] not in classes:
-            print("** class doesn't exist **")
-            return
+            for k, v in models.storage.all().items():
+                if k.split('.')[0] == args:
+                    print_list.append(str(v))
         else:
-            list_inst = []
-            for key, val in models.storage.all().items():
-                if str(key.split('.')[0]) == argv[0]:
-                    list_inst.append(str(val))
-            if not list_inst:
-                return
-            else:
-                print(list_inst)
-                return
+            for k, v in models.storage.all().items():
+                print_list.append(str(v))
+
+        print(print_list)
 
     def do_update(self, arg):
         """Updates an instance based on the class name and id by adding
