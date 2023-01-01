@@ -18,9 +18,26 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self):
+    classes = {
+                "User": User, "Place": Place, "State": State,
+                "City": City, "Amenity": Amenity, "Review": Review,
+                "Review": Review
+              }
+
+    def all(self, cls=None):
         '''This function returns the dictionary __objects'''
-        return self.__objects
+        if cls:
+            if cls.__name__ in self.classes:
+                temp_dict = {}
+                for key, value in self.__objects.items():
+                    if key.split(".")[0] == cls.__name__:
+                        temp_dict[key] = value
+            else:
+                raise NameError()
+        else:
+            temp_dict = self.__objects
+
+        return temp_dict
 
     def new(self, obj):
         '''sets in __objects the obj with key <obj class name>.id'''
@@ -41,3 +58,13 @@ class FileStorage:
                 dic_t = json.loads(file.read())
                 for k, v in dic_t.items():
                     self.__objects[k] = eval(k.split(".")[0])(**v)
+
+    def delete(self, obj=None):
+        """Deletes obj from __objects if it is inside.
+        The method should not do anything if obj is None"""
+        if obj:
+            """The key is converted to the format with which it is stored
+            in __objects"""
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            if key in self.__objects:
+                del self.__objects[key]

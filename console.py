@@ -7,6 +7,7 @@ import ast
 import models
 import cmd
 import shlex
+from models.__init__ import storage
 from models.base_model import BaseModel
 from models.user import User
 from models.city import City
@@ -17,12 +18,16 @@ from models.review import Review
 from datetime import datetime
 
 
-classes = ["BaseModel", "User", "Place", "City", "State", "Amenity", "Review"]
-
-
 class HBNBCommand(cmd.Cmd):
     '''contains the entry point of the command interpreter'''
     prompt = '(hbnb) '
+
+    classes = {
+            "BaseModel": BaseModel, "User": User, "Place": Place,
+            "City": City, "State": State, "Amenity": Amenity,
+            "Review": Review
+          }
+
 
     def do_quit(self, arg):
         """Quit command to exit the program\n"""
@@ -39,17 +44,32 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, arg):
         """creates a new instance of BaseModel, saves it to the JSON file
         and prints the id"""
-        args = arg.split()  # splits the argument using whitespace
-        if len(args) < 1:
+        integers = ["number_rooms", "number_bathrooms", "max_guest",
+                    "price_by_night"]
+        floats = ["latitude", "longitude"]
+        try:
+            if not arg:
+                raise SynaxError()
+            arg_list = arg.split(" ")
+            params = {}
+            for args in arg_list[1:]:
+                arg_attr = args.split("=")
+                arg_attr[1] = eval(arg_attr[1])
+                if type(arg_attr[1]) is str:
+                    arg_attr[1] = arg_attr[1].replace("_", " ").replace("\"", '\\"')
+                elif arg_attr[0] in integers:
+                    arg_attr[1] = int(arg_attr[1])
+                elif arg_attr[0] in floats:
+                    arg_attr[1] = float(arg_attr[1])
+                params[arg_attr[0]] = arg_attr[1]
+        except SyntaxError:
             print("** class name missing **")
-            return False
-        if args[0] not in classes:
-            print("** class doesn't exist **")
-            return False
-        else:
-            new_instance = eval(args[0] + "()")
-            new_instance.save()
-            print(new_instance.id)
+        except NameError:
+            print("** class does not exist **")
+        new_instance = HBNBCommand.classes[arg_list[0]](**params)
+        new_instance.save()
+        print(new_instance.id)
+
 
     def do_show(self, arg):
         """prints the string representation of an instance based on
@@ -57,7 +77,7 @@ class HBNBCommand(cmd.Cmd):
         args = arg.split()  # splits the argument using whitespace
         if len(args) < 1:
             print("** class name missing **")
-        elif args[0] not in classes:
+        elif args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
         elif len(args) < 2:
             print("** instance id missing **")
@@ -76,7 +96,7 @@ class HBNBCommand(cmd.Cmd):
         """
         cmd_list = line.split('.')
         class_name = cmd_list[0]
-        if class_name not in classes:
+        if class_name not in HBNBCommand.classes:
             raise NameError("** class doesn't exist **")
         else:
             counts = 0
@@ -93,7 +113,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         argv = arg.split()  # splits arguments using whitespace as seperator
-        if argv[0] not in classes:
+        if argv[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         elif len(arg) < 2:
@@ -119,7 +139,7 @@ class HBNBCommand(cmd.Cmd):
         cmd_list = line.split(".")
         if len(cmd_list) == 2:
             class_name = cmd_list[0]
-            if class_name in classes:
+            if class_name in HBNBCommand.classes:
                 if cmd_list[1] == "count()":
                     self.count(class_name)
                 elif cmd_list[1] == "all()":
@@ -139,6 +159,7 @@ class HBNBCommand(cmd.Cmd):
                     else:
                         cmd_attr = cmd_attrs[1].strip()
                         cmd_attr1 = cmd_attrs[2].split(")")[0]
+                        B
                         self.do_update("{} {} {} {}".format(
                             class_name, inst_id, cmd_attr, cmd_attr1))
 
@@ -148,7 +169,7 @@ class HBNBCommand(cmd.Cmd):
 
         if args:
             args = args.split(' ')[0]  # remove possible trailing args
-            if args not in classes:
+            if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
             for k, v in models.storage.all().items():
@@ -166,13 +187,12 @@ class HBNBCommand(cmd.Cmd):
         if not arg:
             print("** class name missing **")
             return
-        argv = shlex.split(arg)
-        if argv[0] not in classes:
+        argv = arg.split()
+        if argv[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
         if len(argv) == 1:
             print("** instance id missing **")
-            return
         else:
             try:
                 key = argv[0] + "." + argv[1]
@@ -195,8 +215,8 @@ class HBNBCommand(cmd.Cmd):
                 except ValueError:
                     value = float(argv[3])
             except ValueError:
-                value = argv[3].strip(":\"'")
-            attr = argv[2].strip(":\"'")
+                value = argv[3].strip(":\"\'")
+            attr = argv[2].strip(":\"\'")
             setattr(models.storage.all()[key], attr, value)
             models.storage.save()
 
