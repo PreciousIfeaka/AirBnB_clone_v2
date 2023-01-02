@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """file contains State class"""
 
+from sqlalchemy.ext.declarative import declarative_base
 from os import getenv
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String
@@ -29,5 +30,4 @@ class State(BaseModel, Base):
             for city in class_dict.values():
                 if City.state_id == self.id:
                     class_list.append(city)
-
             return class_list

@@ -3,7 +3,7 @@
 """This module contains the engine DBStorage and it's responsible for
    all database storage"""
 
-from sqlalchemy import create_engine
+from sqlalchemy import (create_engine)
 from os import getenv
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import sessionmaker, Session
@@ -37,7 +37,7 @@ class DBStorage:
                                              getenv('HBNB_MYSQL_HOST'),
                                              getenv('HBNB_MYSQL_DB')),
                                       pool_pre_ping=True)
-        # drop table if HBNB_ENV is equal to test
+        # drop table if HBNB_ENV if in test environment
         if getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
 

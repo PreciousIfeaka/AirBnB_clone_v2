@@ -22,12 +22,9 @@ class HBNBCommand(cmd.Cmd):
     '''contains the entry point of the command interpreter'''
     prompt = '(hbnb) '
 
-    classes = {
-            "BaseModel": BaseModel, "User": User, "Place": Place,
+    classes = {"BaseModel": BaseModel, "User": User, "Place": Place,
             "City": City, "State": State, "Amenity": Amenity,
-            "Review": Review
-          }
-
+            "Review": Review}
 
     def do_quit(self, arg):
         """Quit command to exit the program\n"""
@@ -56,7 +53,8 @@ class HBNBCommand(cmd.Cmd):
                 arg_attr = args.split("=")
                 arg_attr[1] = eval(arg_attr[1])
                 if type(arg_attr[1]) is str:
-                    arg_attr[1] = arg_attr[1].replace("_", " ").replace("\"", '\\"')
+                    arg_attr[1] = (arg_attr[1].
+                                   replace("_", " ").replace("\"", '\\"'))
                 elif arg_attr[0] in integers:
                     arg_attr[1] = int(arg_attr[1])
                 elif arg_attr[0] in floats:
@@ -69,7 +67,6 @@ class HBNBCommand(cmd.Cmd):
         new_instance = HBNBCommand.classes[arg_list[0]](**params)
         new_instance.save()
         print(new_instance.id)
-
 
     def do_show(self, arg):
         """prints the string representation of an instance based on
