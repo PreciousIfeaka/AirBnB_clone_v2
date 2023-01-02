@@ -3,11 +3,11 @@
 
 
 import re
+import sys
 import ast
-import models
 import cmd
 import shlex
-from models.__init__ import storage
+from models import storage
 from models.base_model import BaseModel
 from models.user import User
 from models.city import City
@@ -20,11 +20,74 @@ from datetime import datetime
 
 class HBNBCommand(cmd.Cmd):
     '''contains the entry point of the command interpreter'''
-    prompt = '(hbnb) '
+    prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     classes = {"BaseModel": BaseModel, "User": User, "Place": Place,
             "City": City, "State": State, "Amenity": Amenity,
             "Review": Review}
+
+    dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
+
+    def preloop(self):
+        """Prints is isatty false"""
+        if not sys.__stdin__.isatty():
+            print('(hbnb) ', end='')
+
+    def precmd(self, line):
+        """Reformat command line for advanced command syntax.
+        Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
+        (Brackets denote optional fields in usage example.)
+        """
+        _cmd = _cls = _id = _args = ''  # initialize line elements
+
+        # scan for general formating - i.e '.', '(', ')'
+        if not ('.' in line and '(' in line and ')' in line):
+            return line
+
+        try:  # parse line left to right
+            pline = line[:]  # parsed line
+
+            # isolate <class name>
+            _cls = pline[:pline.find('.')]
+
+            # isolate and validate <command>
+            _cmd = pline[pline.find('.') + 1:pline.find('(')]
+            if _cmd not in HBNBCommand.dot_cmds:
+                raise Exception
+
+            # if parantheses contain arguments, parse them
+            pline = pline[pline.find('(') + 1:pline.find(')')]
+            if pline:
+                # partition args: (<id>, [<delim>], [<*args>])
+                pline = pline.partition(', ')  # pline convert to tuple
+
+                # isolate _id, stripping quotes
+                _id = pline[0].replace('\"', '')
+                # possible bug here:
+                # empty quotes register as empty _id when replaced
+
+                # if arguments exist beyond _id
+                pline = pline[2].strip()  # pline is now str
+                if pline:
+                    # check for *args or **kwargs
+                    if pline[0] == '{' and pline[-1] == '}'\
+                            and type(eval(pline)) is dict:
+                        _args = pline
+                    else:
+                        _args = pline.replace(',', '')
+                        # _args = _args.replace('\"', '')
+            line = ' '.join([_cmd, _cls, _id, _args])
+
+        except Exception as mess:
+            pass
+        finally:
+            return line
+
+    def postcmd(self, stop, line):
+        """Prints if isatty is false"""
+        if not sys.__stdin__.isatty():
+            print('(hbnb) ', end='')
+        return stop
 
     def do_quit(self, arg):
         """Quit command to exit the program\n"""
@@ -32,6 +95,8 @@ class HBNBCommand(cmd.Cmd):
 
     def do_EOF(self, arg):
         """Command to also exit the program\n"""
+        print()
+        exit()
         return True
 
     def emptyline(self):
@@ -64,9 +129,10 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
         except NameError:
             print("** class does not exist **")
-        new_instance = HBNBCommand.classes[arg_list[0]](**params)
-        new_instance.save()
-        print(new_instance.id)
+        new_obj = HBNBCommand.classes[arg_list[0]](**params)
+        storage.new(new_obj)
+        new_obj.save()
+        print(new_obj.id)
 
     def do_show(self, arg):
         """prints the string representation of an instance based on
@@ -80,9 +146,9 @@ class HBNBCommand(cmd.Cmd):
             print("** instance id missing **")
         elif len(args) > 1:
             key = args[0] + "." + args[1]
-            for obj in models.storage.all().keys():
+            for obj in storage.all().keys():
                 if obj == key:
-                    print(models.storage.all()[key])
+                    print(storage.all()[key])
                     break
             if obj != key:
                 print("** no instance found **")
@@ -97,7 +163,7 @@ class HBNBCommand(cmd.Cmd):
             raise NameError("** class doesn't exist **")
         else:
             counts = 0
-            for key in models.storage.all():
+            for key in storage.all():
                 keyval = key.split(".")[0]
                 if keyval == class_name:
                     counts += 1
@@ -119,8 +185,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             try:
                 key = argv[0] + "." + argv[1]
-                models.storage.all().pop(key)
-                models.storage.save()
+                storage.all().pop(key)
+                storage.save()
             except Exception:
                 print("** no instance found **")
             finally:
@@ -169,11 +235,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in models.storage.all().items():
+            for k, v in storage.all().items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in models.storage.all().items():
+            for k, v in storage.all().items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -193,8 +259,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             try:
                 key = argv[0] + "." + argv[1]
-                if key in models.storage.all():
-                    models.storage.all()[key]
+                if key in storage.all():
+                    storage.all()[key]
             except Exception:
                 print("** no instance found **")
                 return
@@ -214,8 +280,8 @@ class HBNBCommand(cmd.Cmd):
             except ValueError:
                 value = argv[3].strip(":\"\'")
             attr = argv[2].strip(":\"\'")
-            setattr(models.storage.all()[key], attr, value)
-            models.storage.save()
+            setattr(storage.all()[key], attr, value)
+            storage.save()
 
 
 if __name__ == '__main__':

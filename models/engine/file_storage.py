@@ -45,7 +45,7 @@ class FileStorage:
 
     def save(self):
         '''serializes __objects to the JSON file (path: __file_path)'''
-        with open(self.__file_path, 'w') as file:
+        with open(self.__file_path, 'w', encoding="UTF-8") as file:
             dic_t = {k: v.to_dict() for k, v in self.__objects.items()}
             json.dump(dic_t, file)
 
@@ -53,11 +53,13 @@ class FileStorage:
         '''deserializes the JSON file to __objects (only if the JSON
         file (__file_path) exists ; otherwise, do nothing. If the file
         doesn’t exist, no exception should be raised)'''
-        if os.path.isfile(self.__file_path):
-            with open(self.__file_path, 'r') as file:
-                dic_t = json.loads(file.read())
-                for k, v in dic_t.items():
-                    self.__objects[k] = eval(k.split(".")[0])(**v)
+        try:
+            with open(self.__file_path, 'r', encoding="UTF-8") as file:
+                for key, value in [(json.load(file)).items()]:
+                    value = eval(value["__class__"])(**value)
+                    self.__objects[key] = value
+        except FileNotFoundError:
+            pass
 
     def delete(self, obj=None):
         """Deletes obj from __objects if it is inside.
@@ -68,3 +70,8 @@ class FileStorage:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             if key in self.__objects:
                 del self.__objects[key]
+
+    def close(self):
+        """deserializing JSON file to objects
+        """
+        self.reload()

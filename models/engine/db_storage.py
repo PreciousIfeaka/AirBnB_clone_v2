@@ -52,7 +52,7 @@ class DBStorage:
                 obj_dict.update({"{}.{}".
                                 format(type(cls).__name__, row.id): row})
         else:
-            for key, value in classes_all.items():
+            for key, value in self.classes_all.items():
                 for row in self.__session.query(value):
                     obj_dict.update({'{}.{}'.
                                     format(type(value).__name__, row.id):
@@ -75,7 +75,7 @@ class DBStorage:
         """
         if obj:
             # class name to be converted to __class__ type
-            class_name = classes_all[type(obj).__name__]
+            class_name = self.classes_all[type(obj).__name__]
 
             # to filter out the table data == obj
             obj_vals = (self.__session.query(class_name).

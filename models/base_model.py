@@ -24,6 +24,10 @@ class BaseModel():
             # allocates an id if it is not presents in the dict arguments
             if 'id' not in kwargs:
                 self.id = str(uuid.uuid4())
+            if 'created_at' not in kwargs:
+                self.created_at = datetime.now()
+            if 'updated_at' not in kwargs:
+                self.updated_at = datetime.now()
 
             for key, value in kwargs.items():
                 """iterates through the attributes of instance in the dict"""
@@ -55,12 +59,13 @@ class BaseModel():
     def to_dict(self):
         '''returns a dictionary containing all keys/values of __dict__
         of the instance'''
-        new_dict = self.__dict__.copy()
-        new_dict.update({'__class__': __class__.__name__})
+        new_dict = dict(self.__dict__)
+        if '_sa_instance_state' in new_dict:
+            del new_dict['_sa_instance_state']
+
+        new_dict.update({'__class__': str(type(self).__name__)})
         new_dict["created_at"] = self.created_at.isoformat()
         new_dict["updated_at"] = self.updated_at.isoformat()
-        if "_sa_instance_state" in new_dict:
-            del new_dict['_sa_instance_state_']
         return new_dict
 
     def delete(self):
