@@ -55,7 +55,7 @@ class FileStorage:
         doesn’t exist, no exception should be raised)'''
         try:
             with open(self.__file_path, 'r', encoding="UTF-8") as file:
-                for key, value in [(json.load(file)).items()]:
+                for key, value in (json.load(file)).items():
                     value = eval(value["__class__"])(**value)
                     self.__objects[key] = value
         except FileNotFoundError:
