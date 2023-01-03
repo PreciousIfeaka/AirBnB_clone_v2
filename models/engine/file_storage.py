@@ -64,15 +64,9 @@ class FileStorage:
     def delete(self, obj=None):
         """Deletes obj from __objects if it is inside.
         The method should not do anything if obj is None"""
-        try:
-            if obj:
-                """The key is converted to the format with which it is stored
-                in __objects"""
-                key = "{}.{}".format(type(obj).__name__, obj.id)
-                if key in self.__objects:
-                    del self.__objects[key]
-        except:
-            pass
+        if obj:
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+            del self.__objects[key]
 
     def close(self):
         """deserializing JSON file to objects
