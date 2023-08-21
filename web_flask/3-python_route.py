@@ -29,6 +29,7 @@ def c_is_fun(text):
 def python_is_cool(text="is cool"):
     return "Python " + text.replace('_', ' ')
 
+
 if __name__ == "__main__":
     """runs the functions"""
     app.run(host='0.0.0.0', port=5000)
