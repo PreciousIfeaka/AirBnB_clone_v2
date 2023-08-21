@@ -10,7 +10,7 @@ app = Flask(__name__)  # creates an instance of the Flask class
 
 @app.route("/", strict_slashes=False)
 def hello():
-    return "<p>Hello HBNB!</p>"
+    return "Hello HBNB!"
 
 
 if __name__ == "__main__":
