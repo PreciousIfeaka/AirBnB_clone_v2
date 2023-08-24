@@ -57,6 +57,10 @@ class FileStorage:
             with open(self.__file_path, 'r', encoding="UTF-8") as file:
                 for key, value in (json.load(file)).items():
                     value = eval(value["__class__"])(**value)
+                    """The above line creates an instance of the __class__
+                    and gives it the the properties listed in the value
+                    dictionary
+                    """
                     self.__objects[key] = value
         except FileNotFoundError:
             pass
