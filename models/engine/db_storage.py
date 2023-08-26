@@ -42,22 +42,15 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """This method queries all objects (depending on the class name)
-        on the current database session, and it returns a dict
-        """
-        obj_dict = {}
-        if cls:
-            all_objs = self.__session.query(cls).all()
-            for row in all_objs:
-                obj_dict.update({"{}.{}".
-                                format(type(cls).__name__, row.id): row})
-        else:
-            for key, value in self.classes_all.items():
-                for row in self.__session.query(value):
-                    obj_dict.update({'{}.{}'.
-                                    format(type(value).__name__, row.id):
-                                    row})
-        return obj_dict
+        """query on the current database session"""
+        new_dict = {}
+        for clss in self.classes_all:
+            if cls is None or cls is self.classes_all[clss] or cls is clss:
+                objs = self.__session.query(self.classes_all[clss]).all()
+                for obj in objs:
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    new_dict[key] = obj
+        return (new_dict)
 
     def new(self, obj):
         """Add obj to the current database session

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """file contains BaseModel class"""
 
+from os import getenv
 import uuid
 from datetime import datetime, time, date
 import models
@@ -59,13 +60,13 @@ class BaseModel():
     def to_dict(self):
         '''returns a dictionary containing all keys/values of __dict__
         of the instance'''
-        new_dict = dict(self.__dict__)
-        if '_sa_instance_state' in new_dict:
-            del new_dict['_sa_instance_state']
+        new_dict = self.__dict__.copy()
 
-        new_dict.update({'__class__': str(type(self).__name__)})
         new_dict["created_at"] = self.created_at.isoformat()
         new_dict["updated_at"] = self.updated_at.isoformat()
+        new_dict.update({'__class__': str(type(self).__name__)})
+        if '_sa_instance_state' in new_dict:
+            del new_dict['_sa_instance_state']
         return new_dict
 
     def delete(self):
